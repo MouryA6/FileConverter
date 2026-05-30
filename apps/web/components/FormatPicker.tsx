@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Conversion, CONVERSIONS, labelFor } from "@/lib/formats";
@@ -79,20 +78,12 @@ export function FormatPicker({ selected, onSelect }: FormatPickerProps) {
   }, [analytics, rankedConversions]);
 
   return (
-    <motion.div
-      className="flex flex-wrap justify-center gap-2"
-      initial="hidden"
-      animate="show"
-      variants={{
-        hidden: {},
-        show: { transition: { staggerChildren: 0.025 } }
-      }}
-    >
+    <div className="flex flex-wrap justify-center gap-2">
       {rankedConversions.map((conversion) => {
         const active = selected?.slug === conversion.slug;
         const hot = hotSlugs.has(conversion.slug);
         return (
-          <motion.button
+          <button
             key={conversion.slug}
             type="button"
             onClick={() => onSelect(conversion)}
@@ -106,16 +97,12 @@ export function FormatPicker({ selected, onSelect }: FormatPickerProps) {
                   ? "border-orange-400/80 bg-gradient-to-r from-red-500/25 via-orange-500/20 to-amber-300/15 text-orange-50 shadow-[0_0_22px_rgba(249,115,22,0.18)] hover:border-amber-200 hover:text-white"
                   : "border-border bg-surface text-zinc-300 hover:border-accent hover:text-white"
             }`}
-            variants={{
-              hidden: { opacity: 0, y: 8 },
-              show: { opacity: 1, y: 0 }
-            }}
           >
             {hot ? <Flame className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> : null}
             <span>{conversionLabel(conversion)}</span>
-          </motion.button>
+          </button>
         );
       })}
-    </motion.div>
+    </div>
   );
 }
