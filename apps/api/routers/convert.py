@@ -198,7 +198,7 @@ async def run_batch_conversion(
         if output_mode == "combined":
             result_path, result_name = _merge_pdfs(completed_paths, "all-files-convertor-combined.pdf")
         else:
-            result_path, result_name = _zip_results(completed_paths, "all-files-convertor-converted-files.zip")
+            result_path, result_name = _zip_results(completed_paths, "all-files-converted.zip")
         _ensure_output_limit([result_path])
 
         jobs[job_id] = mark_job(

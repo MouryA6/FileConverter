@@ -44,7 +44,8 @@ function brandedResultName(filename: string | undefined) {
 
   return filename
     .replace(/^fileflux_combined\.pdf$/i, "all-files-convertor-combined.pdf")
-    .replace(/^fileflux_converted_files\.zip$/i, "all-files-convertor-converted-files.zip")
+    .replace(/^fileflux_converted_files\.zip$/i, "all-files-converted.zip")
+    .replace(/^all-files-convertor-converted-files\.zip$/i, "all-files-converted.zip")
     .replace(/^fileflux\./i, "all-files-convertor.");
 }
 
