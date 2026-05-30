@@ -53,6 +53,8 @@ def _slug_part(value: str) -> str:
 
 
 def conversion_slug(source_ext: str, target_format: str) -> str:
+    if source_ext.lower() == "pdf" and target_format.lower() == "pdf":
+        return "merge-pdfs"
     return f"{_slug_part(source_ext)}-to-{_slug_part(target_format)}"
 
 
@@ -84,7 +86,7 @@ def record_conversion(source_ext: str, target_format: str, mode: str):
         _write_store(store)
 
 
-def popular_conversions(limit: int = 10) -> list[dict]:
+def popular_conversions(limit: int = 50) -> list[dict]:
     with STORE_LOCK:
         store = _read_store()
     day_keys = [time.strftime("%Y-%m-%d", time.localtime(time.time() - offset * 86400)) for offset in range(6, -1, -1)]
@@ -98,7 +100,7 @@ def popular_conversions(limit: int = 10) -> list[dict]:
         mix = conversion.get("mix", {})
         conversions.append(
             {
-                "slug": conversion["slug"],
+                "slug": "merge-pdfs" if conversion["slug"] == "pdf-to-pdf" else conversion["slug"],
                 "total": total,
                 "trend": [by_day.get(day, 0) for day in day_keys],
                 "mix": [mix.get(key, 0) for key in MIX_KEYS],

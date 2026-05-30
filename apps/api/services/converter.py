@@ -5,6 +5,7 @@ from services.pdf import pdf_to_docx, pdf_to_html, pdf_to_image, pdf_to_text
 from services.web import html_to_pdf, txt_to_docx, txt_to_pdf
 
 SUPPORTED_CONVERSIONS = [
+    {"from": "pdf", "to": "pdf"},
     {"from": "pdf", "to": "docx"},
     {"from": "pdf", "to": "pptx"},
     {"from": "pdf", "to": "xlsx"},

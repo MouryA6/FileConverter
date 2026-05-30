@@ -15,6 +15,7 @@ const SOURCE_ALIASES: Record<string, string[]> = {
   JPG: ["jpeg"],
   PPTX: ["ppt"]
 };
+const DEFAULT_CONVERSION = CONVERSIONS.find((nextConversion) => nextConversion.slug === "pdf-to-word") ?? CONVERSIONS[0];
 const SUPPORTED_SOURCES = new Set(
   CONVERSIONS.flatMap((nextConversion) => [
     nextConversion.from.toLowerCase(),
@@ -60,7 +61,7 @@ function debugDropZone(event: string, details: Record<string, unknown> = {}) {
 
 export function DropZone({ conversion }: DropZoneProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedConversion, setSelectedConversion] = useState<Conversion>(conversion ?? CONVERSIONS[0]);
+  const [selectedConversion, setSelectedConversion] = useState<Conversion>(conversion ?? DEFAULT_CONVERSION);
   const [files, setFiles] = useState<File[]>([]);
   const [outputMode, setOutputMode] = useState<"separate" | "combined">("separate");
   const [jobId, setJobId] = useState<string | null>(null);
@@ -76,6 +77,10 @@ export function DropZone({ conversion }: DropZoneProps) {
   const validateSelectedFiles = useCallback((nextFiles: File[], conversionToCheck: Conversion, mode: "separate" | "combined") => {
     if (!nextFiles.length) {
       return "Choose at least one file.";
+    }
+
+    if (conversionToCheck.intent === "merge" && nextFiles.length < 2) {
+      return "Choose at least two PDF files to merge.";
     }
 
     if (nextFiles.length > MAX_BATCH_FILES) {
@@ -102,7 +107,8 @@ export function DropZone({ conversion }: DropZoneProps) {
       return `${mismatchedFile.name} does not match ${conversionToCheck.from} to ${conversionToCheck.to}. Select ${conversionToCheck.from} files or choose a different conversion.`;
     }
 
-    if (nextFiles.length > 1 && mode === "combined" && targetExtension(conversionToCheck.to) !== "pdf") {
+    const requestedMode = conversionToCheck.intent === "merge" ? "combined" : mode;
+    if (nextFiles.length > 1 && requestedMode === "combined" && targetExtension(conversionToCheck.to) !== "pdf") {
       return "Combined output is currently available when the destination format is PDF. Choose separate files for this format.";
     }
 
@@ -223,22 +229,26 @@ export function DropZone({ conversion }: DropZoneProps) {
 
   const targetFormat = targetExtension(selectedConversion.to);
   const canCombine = targetFormat === "pdf";
+  const isMergePdf = selectedConversion.intent === "merge";
+  const activeOutputMode = isMergePdf ? "combined" : outputMode;
   const isWorking = status === "uploading" || status === "processing";
   const isComplete = status === "complete";
   const showSetupControls = !isWorking && !isComplete;
   const canConvert = useMemo(
-    () => Boolean(files.length && selectedConversion && (outputMode === "separate" || canCombine)),
-    [files.length, selectedConversion, outputMode, canCombine]
+    () => Boolean(files.length >= (isMergePdf ? 2 : 1) && selectedConversion && (activeOutputMode === "separate" || canCombine)),
+    [files.length, selectedConversion, activeOutputMode, canCombine, isMergePdf]
   );
 
   function selectConversion(nextConversion: Conversion) {
     setSelectedConversion(nextConversion);
     setFileStatuses([]);
-    if (targetExtension(nextConversion.to) !== "pdf" && outputMode === "combined") {
+    if (nextConversion.intent === "merge") {
+      setOutputMode("combined");
+    } else if (targetExtension(nextConversion.to) !== "pdf" && outputMode === "combined") {
       setOutputMode("separate");
     }
     if (files.length) {
-      setError(validateSelectedFiles(files, nextConversion, targetExtension(nextConversion.to) === "pdf" ? outputMode : "separate"));
+      setError(validateSelectedFiles(files, nextConversion, nextConversion.intent === "merge" || targetExtension(nextConversion.to) === "pdf" ? outputMode : "separate"));
     }
   }
 
@@ -247,7 +257,7 @@ export function DropZone({ conversion }: DropZoneProps) {
       return;
     }
 
-    const validationError = validateSelectedFiles(files, selectedConversion, outputMode);
+    const validationError = validateSelectedFiles(files, selectedConversion, activeOutputMode);
     if (validationError) {
       setError(validationError);
       return;
@@ -263,7 +273,7 @@ export function DropZone({ conversion }: DropZoneProps) {
 
     try {
       if (files.length > 1) {
-        await startBatchConversion(files, targetFormat, nextJobId, outputMode);
+        await startBatchConversion(files, targetFormat, nextJobId, activeOutputMode);
       } else {
         await startConversion(files[0], targetFormat, nextJobId);
       }
@@ -342,6 +352,12 @@ export function DropZone({ conversion }: DropZoneProps) {
     setFileStatuses([]);
   }
 
+  const primaryActionLabel = isMergePdf
+    ? "Merge PDFs"
+    : files.length > 1 && activeOutputMode === "combined"
+      ? `Combine to ${selectedConversion.to}`
+      : `Convert to ${selectedConversion.to}`;
+
   return (
     <section className="space-y-6">
       {showSetupControls ? (
@@ -383,7 +399,9 @@ export function DropZone({ conversion }: DropZoneProps) {
             {files.length === 0 ? "Drop your files here" : files.length === 1 ? files[0].name : `${files.length} files selected`}
           </p>
           <p className="mt-2 max-w-md text-sm text-muted">
-            Select one file or many. Files are validated locally, sent over TLS, processed in isolation, and purged after download.
+            {isMergePdf
+              ? "Select two or more PDFs. Files are validated locally, sent over TLS, merged in order, and purged after download."
+              : "Select one file or many. Files are validated locally, sent over TLS, processed in isolation, and purged after download."}
           </p>
           <button
             type="button"
@@ -417,7 +435,7 @@ export function DropZone({ conversion }: DropZoneProps) {
 
       {showSetupControls ? <FormatPicker selected={selectedConversion} onSelect={selectConversion} /> : null}
 
-      {showSetupControls && files.length > 1 ? (
+      {showSetupControls && files.length > 1 && !isMergePdf ? (
         <div className="mx-auto grid w-full max-w-2xl gap-3 sm:grid-cols-2">
           <button
             type="button"
@@ -464,7 +482,7 @@ export function DropZone({ conversion }: DropZoneProps) {
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-bg disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
         >
           <ShieldCheck className="h-4 w-4" />
-          {files.length > 1 && outputMode === "combined" ? `Combine to ${selectedConversion.to}` : `Convert to ${selectedConversion.to}`}
+          {primaryActionLabel}
         </button>
         {files.length || status !== "idle" ? (
           <button

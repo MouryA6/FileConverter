@@ -1,4 +1,5 @@
 const CONVERSIONS = [
+  { slug: "merge-pdfs", priority: 1 },
   { slug: "pdf-to-word", priority: 1 },
   { slug: "pdf-to-powerpoint", priority: 0.9 },
   { slug: "pdf-to-excel", priority: 0.95 },

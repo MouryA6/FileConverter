@@ -3,10 +3,13 @@ export type Conversion = {
   to: string;
   slug: string;
   icon: string;
+  label?: string;
+  intent?: "merge";
   priority?: number;
 };
 
 export const CONVERSIONS: Conversion[] = [
+  { from: "PDF", to: "PDF", slug: "merge-pdfs", icon: "Files", label: "Merge PDFs", intent: "merge", priority: 1.1 },
   { from: "PDF", to: "DOCX", slug: "pdf-to-word", icon: "FileText", priority: 1 },
   { from: "PDF", to: "PPTX", slug: "pdf-to-powerpoint", icon: "Presentation", priority: 0.9 },
   { from: "PDF", to: "XLSX", slug: "pdf-to-excel", icon: "Table", priority: 0.95 },

@@ -158,7 +158,10 @@ async def run_batch_conversion(
                     )
 
                 try:
-                    result_path, _result_name = await dispatch(content, filename, target_format)
+                    if source_extension(filename) == "pdf" and target_format.lower() == "pdf":
+                        result_path, _result_name = _stage_pdf_for_merge(content, filename)
+                    else:
+                        result_path, _result_name = await dispatch(content, filename, target_format)
                     converted_paths[index] = result_path
                 except Exception as exc:
                     async with lock:
@@ -248,6 +251,14 @@ def _zip_results(paths: list[str], result_name: str) -> tuple[str, str]:
             archive.write(source, archive_name)
 
     return str(zip_path), result_name
+
+
+def _stage_pdf_for_merge(content: bytes, filename: str) -> tuple[str, str]:
+    out_dir = Path(tempfile.mkdtemp(prefix="ff_out_"))
+    staged_name = sanitize_filename(filename)
+    staged_path = out_dir / staged_name
+    staged_path.write_bytes(content)
+    return str(staged_path), staged_name
 
 
 def _merge_pdfs(paths: list[str], result_name: str) -> tuple[str, str]:
