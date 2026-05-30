@@ -1,6 +1,6 @@
-# FileFlux
+# All Files Convertor
 
-FileFlux is a privacy-first file conversion web app. It is built as a small monorepo:
+All Files Convertor is a privacy-first file conversion web app. It is built as a small monorepo:
 
 - `apps/web` - Next.js App Router frontend
 - `apps/api` - FastAPI conversion backend
@@ -22,7 +22,7 @@ npm run dev
 ```
 
 Set `NEXT_PUBLIC_API_URL=http://localhost:8000` for local frontend-to-backend calls.
-Set `ANALYTICS_PATH=/tmp/fileflux_analytics.json` locally, or point it at persistent storage in production so customer conversion counts survive deploys/restarts.
+Set `ANALYTICS_PATH=/tmp/all_files_convertor_analytics.json` locally, or point it at persistent storage in production so customer conversion counts survive deploys/restarts.
 
 ## Current Local Limits
 
@@ -32,7 +32,7 @@ Set `ANALYTICS_PATH=/tmp/fileflux_analytics.json` locally, or point it at persis
 - `MAX_OUTPUT_MB=500` total converted output size
 - `BATCH_CONCURRENCY=3` active conversions per batch
 - `CLEANUP_TTL_MINUTES=10` before completed jobs expire
-- `TEMP_FILE_TTL_MINUTES=60` before abandoned FileFlux temp folders are purged
+- `TEMP_FILE_TTL_MINUTES=60` before abandoned conversion temp folders are purged
 - `CLEANUP_INTERVAL_SECONDS=300` between cleanup passes
 
 Multiple files can be downloaded as separate converted files in a ZIP, or merged into one PDF when the destination format is PDF.

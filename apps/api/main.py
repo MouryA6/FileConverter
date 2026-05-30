@@ -13,11 +13,11 @@ from utils.rate_limit import check_rate_limit, close_rate_limiter, _env_bool, ra
 if os.getenv("SENTRY_DSN"):
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.05)
 
-app = FastAPI(title="FileFlux API", version="1.0.0")
+app = FastAPI(title="All Files Convertor API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL", "https://fileflux.io")],
+    allow_origins=[os.getenv("FRONTEND_URL", "https://allfilesconvertor.com")],
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
 )

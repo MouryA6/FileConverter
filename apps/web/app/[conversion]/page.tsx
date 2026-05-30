@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const from = labelFor(conversion.from);
   const to = labelFor(conversion.to);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fileflux.io";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://allfilesconvertor.com";
   const description = `Convert ${from} to ${to} online for free with no sign-up, private temporary processing, and automatic cleanup after conversion.`;
 
   return {
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: `/${conversion.slug}`
     },
     openGraph: {
-      title: `Convert ${from} to ${to} Free Online - FileFlux`,
+      title: `Convert ${from} to ${to} Free Online - All Files Convertor`,
       description,
       url: `${siteUrl}/${conversion.slug}`
     },
@@ -57,7 +57,7 @@ export default async function ConversionPage({ params }: PageProps) {
   const faq = [
     {
       question: `Is it free to convert ${from} to ${to}?`,
-      answer: "Yes, FileFlux is free to use. Uploads have practical size and batch limits to keep conversions reliable."
+      answer: "Yes, All Files Convertor is free to use. Uploads have practical size and batch limits to keep conversions reliable."
     },
     {
       question: "Is my file safe when I upload it?",
@@ -70,15 +70,15 @@ export default async function ConversionPage({ params }: PageProps) {
     },
     {
       question: "Do I need to create an account?",
-      answer: "No. FileFlux works without sign-up, logins, or account-based conversion caps."
+      answer: "No. All Files Convertor works without sign-up, logins, or account-based conversion caps."
     }
   ];
 
   const webAppSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: `FileFlux ${from} to ${to} Converter`,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://fileflux.io"}/${conversion.slug}`,
+    name: `All Files Convertor ${from} to ${to} Converter`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://allfilesconvertor.com"}/${conversion.slug}`,
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Any",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -108,9 +108,9 @@ export default async function ConversionPage({ params }: PageProps) {
           Convert {from} to {to} - free, private, fast
         </h1>
         <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-zinc-300">
-          Upload a {from} file and convert it to {to} in a secure cloud container. FileFlux is built for quick
-          conversions without sign-ups, paywalls, or permanent file storage, so your document moves through the system
-          only long enough to create the download.
+          Upload a {from} file and convert it to {to} in a secure cloud container. All Files Convertor is built for
+          quick conversions without sign-ups, paywalls, or permanent file storage, so your document moves through the
+          system only long enough to create the download.
         </p>
       </section>
 

@@ -4,28 +4,28 @@ import "./globals.css";
 import { CookieBanner } from "@/components/CookieBanner";
 import { NavBar } from "@/components/NavBar";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fileflux.io";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://allfilesconvertor.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "FileFlux - Free Private File Converter",
-    template: "%s - FileFlux"
+    default: "All Files Convertor - Free Private File Convertor",
+    template: "%s - All Files Convertor"
   },
   description: "Convert files online for free with no sign-up, private temporary processing, and automatic cleanup.",
   alternates: {
     canonical: "/"
   },
   openGraph: {
-    title: "FileFlux",
+    title: "All Files Convertor",
     description: "Free, privacy-first file conversion with temporary processing and automatic cleanup.",
     url: siteUrl,
-    siteName: "FileFlux",
+    siteName: "All Files Convertor",
     type: "website"
   },
   twitter: {
     card: "summary",
-    title: "FileFlux - Free Private File Converter",
+    title: "All Files Convertor - Free Private File Convertor",
     description: "Convert files online for free with no sign-up, private temporary processing, and automatic cleanup."
   }
 };

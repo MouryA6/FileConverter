@@ -1,10 +1,10 @@
-# FileFlux Production Readiness
+# All Files Convertor Production Readiness
 
 This checklist covers the production-facing configuration that should be completed before deployment.
 
 ## Environment
 
-- `NEXT_PUBLIC_SITE_URL` must be the canonical production site URL, for example `https://fileflux.io`.
+- `NEXT_PUBLIC_SITE_URL` must be the canonical production site URL, for example `https://allfilesconvertor.com`.
 - `FRONTEND_URL` must be the exact production origin for CORS.
 - `NEXT_PUBLIC_API_URL` must point at the deployed API origin or internal proxy.
 - `SENTRY_DSN` should be set for API errors.
@@ -52,7 +52,7 @@ TEMP_FILE_TTL_MINUTES=60
 CLEANUP_INTERVAL_SECONDS=300
 ```
 
-Completed jobs are removed after the job TTL. Abandoned temp folders with FileFlux prefixes are purged by the periodic cleanup loop.
+Completed jobs are removed after the job TTL. Abandoned conversion temp folders are purged by the periodic cleanup loop.
 
 ## Observability
 

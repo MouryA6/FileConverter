@@ -93,7 +93,7 @@ class RedisIpRateLimiter:
     async def check(self, client_id: str) -> tuple[bool, int]:
         client = await self._redis()
         now = time.time()
-        key = f"fileflux:rate:{sha256(client_id.encode('utf-8')).hexdigest()}"
+        key = f"all-files-convertor:rate:{sha256(client_id.encode('utf-8')).hexdigest()}"
         cutoff = now - self.window_seconds
 
         await client.zremrangebyscore(key, 0, cutoff)

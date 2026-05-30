@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { CONVERSIONS } from "../lib/sitemap-conversions.js";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://fileflux.io";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://allfilesconvertor.com";
 const today = new Date().toISOString();
 
 const staticRoutes = [

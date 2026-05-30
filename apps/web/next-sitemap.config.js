@@ -1,7 +1,7 @@
 const { CONVERSIONS } = require("./lib/sitemap-conversions");
 
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://fileflux.io",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://allfilesconvertor.com",
   generateRobotsTxt: true,
   changefreq: "weekly",
   priority: 0.8,

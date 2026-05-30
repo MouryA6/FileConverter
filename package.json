@@ -1,5 +1,5 @@
 {
-  "name": "fileflux",
+  "name": "all-files-convertor",
   "private": true,
   "scripts": {
     "dev": "npm --workspace apps/web run dev",

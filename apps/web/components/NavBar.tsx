@@ -6,7 +6,7 @@ export function NavBar() {
     <header className="sticky top-0 z-40 border-b border-white/10 bg-bg/76 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="text-lg font-semibold tracking-tight">
-          FileFlux
+          All Files Convertor
         </Link>
         <div className="hidden items-center gap-7 text-sm text-zinc-300 sm:flex">
           <Link href="/#tools" className="hover:text-white">

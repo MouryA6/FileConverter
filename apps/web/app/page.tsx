@@ -9,8 +9,8 @@ export default function Home() {
   const appSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "FileFlux File Converter",
-    url: "https://fileflux.io",
+    name: "All Files Convertor",
+    url: "https://allfilesconvertor.com",
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Any",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -28,8 +28,8 @@ export default function Home() {
           Convert anything. Keep everything private.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
-          FileFlux converts PDFs, images, Office documents, spreadsheets, and web files in the cloud without accounts,
-          permanent storage, or daily conversion caps.
+          All Files Convertor converts PDFs, images, Office documents, spreadsheets, and web files in the cloud without
+          accounts, permanent storage, or daily conversion caps.
         </p>
       </section>
 

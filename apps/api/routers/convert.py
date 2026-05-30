@@ -19,7 +19,7 @@ from utils.security import sanitize_filename, validate_file
 from utils.storage import delete_job
 
 router = APIRouter()
-logger = logging.getLogger("fileflux.convert")
+logger = logging.getLogger("all_files_convertor.convert")
 jobs: dict[str, dict] = {}
 BATCH_CONCURRENCY = int(os.getenv("BATCH_CONCURRENCY", "3"))
 MAX_BATCH_FILES = int(os.getenv("MAX_BATCH_FILES", "20"))
@@ -193,9 +193,9 @@ async def run_batch_conversion(
         _ensure_output_limit(completed_paths)
 
         if output_mode == "combined":
-            result_path, result_name = _merge_pdfs(completed_paths, "fileflux_combined.pdf")
+            result_path, result_name = _merge_pdfs(completed_paths, "all-files-convertor-combined.pdf")
         else:
-            result_path, result_name = _zip_results(completed_paths, "fileflux_converted_files.zip")
+            result_path, result_name = _zip_results(completed_paths, "all-files-convertor-converted-files.zip")
         _ensure_output_limit([result_path])
 
         jobs[job_id] = mark_job(

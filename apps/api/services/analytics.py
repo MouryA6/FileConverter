@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 
-ANALYTICS_PATH = Path(os.getenv("ANALYTICS_PATH", Path(tempfile.gettempdir()) / "fileflux_analytics.json"))
+ANALYTICS_PATH = Path(os.getenv("ANALYTICS_PATH", Path(tempfile.gettempdir()) / "all_files_convertor_analytics.json"))
 SOURCE_SLUGS = {
     "docx": "word",
     "ppt": "powerpoint",

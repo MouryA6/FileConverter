@@ -14,7 +14,7 @@ services:
       CLEANUP_TTL_MINUTES: 10
       TEMP_FILE_TTL_MINUTES: 60
       CLEANUP_INTERVAL_SECONDS: 300
-      ANALYTICS_PATH: /data/fileflux_analytics.json
+      ANALYTICS_PATH: /data/all_files_convertor_analytics.json
       RATE_LIMIT_ENABLED: "true"
       RATE_LIMIT_BACKEND: redis
       RATE_LIMIT_REQUESTS: 30

@@ -21,7 +21,7 @@ const SUPPORTED_SOURCES = new Set(
     ...(SOURCE_ALIASES[nextConversion.from] ?? [])
   ])
 );
-const FILE_INPUT_ID = "fileflux-file-input";
+const FILE_INPUT_ID = "all-files-convertor-file-input";
 
 function formatMegabytes(bytes: number) {
   return `${Math.round(bytes / 1024 / 1024)}MB`;
@@ -303,7 +303,7 @@ export function DropZone({ conversion }: DropZoneProps) {
       const href = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = href;
-      link.download = resultName ?? `fileflux.${targetExtension(selectedConversion.to)}`;
+      link.download = resultName ?? `all-files-convertor.${targetExtension(selectedConversion.to)}`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -331,7 +331,7 @@ export function DropZone({ conversion }: DropZoneProps) {
   return (
     <section className="space-y-6">
       <div
-        data-testid="fileflux-dropzone"
+        data-testid="all-files-convertor-dropzone"
         onPointerDownCapture={logPointerDown}
         onClick={openPickerFromDropzone}
         onDragEnter={handleDragEnter}
@@ -354,7 +354,7 @@ export function DropZone({ conversion }: DropZoneProps) {
         <input
           ref={fileInputRef}
           id={FILE_INPUT_ID}
-          data-testid="fileflux-file-input"
+          data-testid="all-files-convertor-file-input"
           aria-label="Choose files to convert"
           className="sr-only"
           multiple

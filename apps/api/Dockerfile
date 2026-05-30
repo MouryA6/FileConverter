@@ -13,15 +13,15 @@ RUN apt-get update && apt-get install -y \
     fonts-noto \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -u 1000 fileflux
+RUN useradd -m -u 1000 appuser
 WORKDIR /app
-RUN chown fileflux:fileflux /app
+RUN chown appuser:appuser /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY --chown=fileflux:fileflux . .
-USER fileflux
+COPY --chown=appuser:appuser . .
+USER appuser
 
 EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
