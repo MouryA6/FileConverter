@@ -1,7 +1,6 @@
 "use client";
 
-import { ChangeEvent, MouseEvent, PointerEvent, useCallback, useMemo, useRef, useState } from "react";
-import { FileRejection, useDropzone } from "react-dropzone";
+import { ChangeEvent, DragEvent, MouseEvent, PointerEvent, useCallback, useMemo, useRef, useState } from "react";
 import { FileStack, FileUp, Lock, PackageOpen, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
 import { ConversionProgress } from "@/components/ConversionProgress";
 import { DownloadCard } from "@/components/DownloadCard";
@@ -61,6 +60,7 @@ export function DropZone({ conversion }: DropZoneProps) {
   const [resultName, setResultName] = useState<string | undefined>();
   const [downloadState, setDownloadState] = useState<"ready" | "downloading" | "downloaded">("ready");
   const [fileStatuses, setFileStatuses] = useState<JobFileStatus[]>([]);
+  const [isDragActive, setIsDragActive] = useState(false);
 
   const validateSelectedFiles = useCallback((nextFiles: File[], conversionToCheck: Conversion, mode: "separate" | "combined") => {
     if (!nextFiles.length) {
@@ -114,30 +114,6 @@ export function DropZone({ conversion }: DropZoneProps) {
     setFileStatuses([]);
   }, [outputMode, selectedConversion, validateSelectedFiles]);
 
-  const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
-    const firstRejection = fileRejections[0];
-    const firstError = firstRejection?.errors[0];
-    if (firstError?.code === "file-too-large" && firstRejection.file) {
-      setError(`${firstRejection.file.name} is over the ${formatMegabytes(MAX_BYTES)} per-file limit.`);
-      return;
-    }
-    if (firstError?.code === "too-many-files") {
-      setError(`You can upload up to ${MAX_BATCH_FILES} files per batch.`);
-      return;
-    }
-    setError(firstError?.message ?? "One or more files could not be selected.");
-  }, []);
-
-  const { getRootProps, isDragActive } = useDropzone({
-    onDrop,
-    onDropRejected,
-    multiple: true,
-    maxFiles: MAX_BATCH_FILES,
-    maxSize: MAX_BYTES,
-    noClick: true,
-    noKeyboard: true
-  });
-
   function openFilePicker(source: string) {
     const input = fileInputRef.current;
     debugDropZone("openFilePicker", {
@@ -180,13 +156,58 @@ export function DropZone({ conversion }: DropZoneProps) {
     });
   }
 
-  function logChooseLabelClick(event: MouseEvent<HTMLLabelElement>) {
+  function openPickerFromButton(event: MouseEvent<HTMLButtonElement>) {
     event.stopPropagation();
-    debugDropZone("chooseLabelClick", {
+    debugDropZone("chooseButtonClick", {
       defaultPrevented: event.defaultPrevented,
-      inputConnected: fileInputRef.current?.isConnected,
-      labelFor: event.currentTarget.htmlFor
+      inputConnected: fileInputRef.current?.isConnected
     });
+    openFilePicker("choose-button");
+  }
+
+  function openPickerFromDropzone(event: MouseEvent<HTMLDivElement>) {
+    if (event.defaultPrevented) {
+      return;
+    }
+    debugDropZone("dropzoneClick", {
+      defaultPrevented: event.defaultPrevented,
+      inputConnected: fileInputRef.current?.isConnected
+    });
+    openFilePicker("dropzone-click");
+  }
+
+  function handleDragEnter(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragActive(true);
+  }
+
+  function handleDragOver(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = "copy";
+    setIsDragActive(true);
+  }
+
+  function handleDragLeave(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      return;
+    }
+    setIsDragActive(false);
+  }
+
+  function handleFileDrop(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragActive(false);
+    const droppedFiles = Array.from(event.dataTransfer.files);
+    debugDropZone("drop", {
+      count: droppedFiles.length,
+      names: droppedFiles.map((file) => file.name)
+    });
+    onDrop(droppedFiles);
   }
 
   const targetFormat = targetExtension(selectedConversion.to);
@@ -310,9 +331,13 @@ export function DropZone({ conversion }: DropZoneProps) {
   return (
     <section className="space-y-6">
       <div
-        {...getRootProps()}
         data-testid="fileflux-dropzone"
         onPointerDownCapture={logPointerDown}
+        onClick={openPickerFromDropzone}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleFileDrop}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
@@ -331,14 +356,13 @@ export function DropZone({ conversion }: DropZoneProps) {
           id={FILE_INPUT_ID}
           data-testid="fileflux-file-input"
           aria-label="Choose files to convert"
-          className="absolute inset-0 z-20 h-full w-full cursor-pointer opacity-[0.01]"
+          className="sr-only"
           multiple
           onClick={logInputClick}
-          onPointerDown={(event) => event.stopPropagation()}
           onChange={selectFilesFromInput}
           type="file"
         />
-        <div className="pointer-events-none relative z-30 flex flex-col items-center justify-center">
+        <div className="pointer-events-none flex flex-col items-center justify-center">
           <FileUp className="mb-4 h-10 w-10 text-accent2" />
           <p className="text-xl font-semibold">
             {files.length === 0 ? "Drop your files here" : files.length === 1 ? files[0].name : `${files.length} files selected`}
@@ -346,14 +370,14 @@ export function DropZone({ conversion }: DropZoneProps) {
           <p className="mt-2 max-w-md text-sm text-muted">
             Select one file or many. Files are validated locally, sent over TLS, processed in isolation, and purged after download.
           </p>
-          <label
-            htmlFor={FILE_INPUT_ID}
-            onClick={logChooseLabelClick}
+          <button
+            type="button"
+            onClick={openPickerFromButton}
             onPointerDown={(event) => event.stopPropagation()}
             className="pointer-events-auto relative z-30 mt-4 inline-flex cursor-pointer items-center rounded-lg border border-accent/70 bg-accent/15 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent/25"
           >
             Choose files
-          </label>
+          </button>
           {files.length > 1 ? (
             <div className="mt-4 max-w-md text-xs text-zinc-400">
               {files.slice(0, 3).map((nextFile) => nextFile.name).join(", ")}
