@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, MouseEvent, PointerEvent, useCallback, useMemo, useRef, useState } from "react";
+import { ChangeEvent, PointerEvent, useCallback, useMemo, useRef, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { FileStack, FileUp, Lock, PackageOpen, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
 import { ConversionProgress } from "@/components/ConversionProgress";
@@ -170,17 +170,6 @@ export function DropZone({ conversion }: DropZoneProps) {
     });
   }
 
-  function logClickAndOpen(event: MouseEvent<HTMLDivElement>) {
-    const target = event.target instanceof Element ? event.target : null;
-    debugDropZone("click", {
-      button: event.button,
-      defaultPrevented: event.defaultPrevented,
-      targetTag: target?.tagName,
-      targetText: target?.textContent?.slice(0, 80)
-    });
-    openFilePicker("dropzone-click");
-  }
-
   const targetFormat = targetExtension(selectedConversion.to);
   const canCombine = targetFormat === "pdf";
   const canConvert = useMemo(
@@ -304,7 +293,6 @@ export function DropZone({ conversion }: DropZoneProps) {
       <div
         {...getRootProps()}
         onPointerDownCapture={logPointerDown}
-        onClick={logClickAndOpen}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
@@ -321,8 +309,15 @@ export function DropZone({ conversion }: DropZoneProps) {
         <input
           ref={fileInputRef}
           aria-label="Choose files to convert"
-          className="sr-only"
+          className="absolute inset-0 z-20 h-full w-full cursor-pointer opacity-0"
           multiple
+          onClick={(event) => {
+            debugDropZone("inputClick", {
+              defaultPrevented: event.defaultPrevented,
+              inputConnected: event.currentTarget.isConnected,
+              inputMultiple: event.currentTarget.multiple
+            });
+          }}
           onChange={selectFilesFromInput}
           type="file"
         />
